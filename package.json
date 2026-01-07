@@ -1,0 +1,22 @@
+{
+  "name": "eventride-api",
+  "version": "1.0.0",
+  "description": "Event platform with a ride-sharing system based on business rules and space management.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/server.ts"
+  },
+  "author": "Michaelle Oliveira",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.3",
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
