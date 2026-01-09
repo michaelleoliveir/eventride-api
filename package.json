@@ -9,6 +9,7 @@
   "author": "Michaelle Oliveira",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "6.19",
     "dotenv": "^17.2.3",
     "express": "^5.2.1"
   },
@@ -16,7 +17,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^25.0.3",
     "nodemon": "^3.1.11",
-    "prisma": "^7.2.0",
+    "prisma": "6.19",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }

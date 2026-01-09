@@ -20,85 +20,85 @@ enum RequestStatus {
 }
 
 model User {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
-  email    String @unique
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  email String @unique
   password String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // relacionamentos
-  eventsCreated Event[]   @relation("UserEvent")
-  ridesAsDriver Ride[]    @relation("UserRide")
-  requests      Request[] @relation("UserRequest")
+  eventsCreated Event[] @relation("UserEvent")
+  ridesAsDriver Ride[] @relation("UserRide")
+  requests Request[] @relation("UserRequest")
 }
 
 model Address {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  state    String
-  city     String
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  state String
+  city String
   district String
-  street   String
-  number   String
+  street String
+  number String
 
-  events             Event[] @relation("AddressEvent")
-  ridesAsOrigin      Ride[]  @relation("RideOrigin")
-  ridesAsDestination Ride[]  @relation("RideDestination")
+  events Event[] @relation("AddressEvent")
+  ridesAsOrigin Ride[] @relation("RideOrigin")
+  ridesAsDestination Ride[] @relation("RideDestination")
 }
 
 model Event {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
   description String
-  date        DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  date DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  addressId String  @db.ObjectId
-  address   Address @relation("AddressEvent", fields: [addressId], references: [id])
+  addressId String @db.ObjectId
+  address Address @relation("AddressEvent", fields: [addressId], references: [id])
 
   createdById String @db.ObjectId
-  createdBy   User   @relation("UserEvent", fields: [createdById], references: [id])
+  createdBy User @relation("UserEvent", fields: [createdById], references: [id])
 
   rides Ride[] @relation("EventRide")
 }
 
 model Ride {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  totalSeats     Int
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  totalSeats Int
   availableSeats Int
-  date           DateTime
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  date DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   eventId String @db.ObjectId
-  event   Event  @relation("EventRide", fields: [eventId], references: [id])
+  event Event @relation("EventRide", fields: [eventId], references: [id])
 
   driverId String @db.ObjectId
-  driver   User   @relation("UserRide", fields: [driverId], references: [id])
+  driver User @relation("UserRide", fields: [driverId], references: [id])
 
-  originAddressId String  @db.ObjectId
-  origin          Address @relation("RideOrigin", fields: [originAddressId], references: [id])
+  originAddressId String @db.ObjectId
+  origin Address @relation("RideOrigin", fields: [originAddressId], references: [id])
 
-  destinationAddressId String  @db.ObjectId
-  destination          Address @relation("RideDestination", fields: [destinationAddressId], references: [id])
+  destinationAddressId String @db.ObjectId
+  destination Address @relation("RideDestination", fields: [destinationAddressId], references: [id])
 
   // relacionamentos
   requests Request[] @relation("RideRequest")
 }
 
 model Request {
-  id        String        @id @default(auto()) @map("_id") @db.ObjectId
-  status    RequestStatus @default(PENDING)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  status RequestStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   rideId String @db.ObjectId
-  ride   Ride   @relation("RideRequest", fields: [rideId], references: [id])
+  ride Ride @relation("RideRequest", fields: [rideId], references: [id])
 
   requesterId String @db.ObjectId
-  requester   User   @relation("UserRequest", fields: [requesterId], references: [id])
+  requester User @relation("UserRequest", fields: [requesterId], references: [id])
 
   @@unique([rideId, requesterId])
 }
