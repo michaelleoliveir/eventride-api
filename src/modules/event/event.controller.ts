@@ -12,4 +12,9 @@ export class EventController {
 
         return res.status(201).json(event)
     }
+
+    async findAll(req: Request, res: Response) {
+        const events = await eventService.findAll()
+        return res.status(201).json(events)
+    }
 }

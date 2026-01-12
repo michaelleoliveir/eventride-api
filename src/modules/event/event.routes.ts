@@ -6,5 +6,6 @@ const router = Router();
 const controller = new EventController();
 
 router.post('/', ensureAuthenticated, controller.create);
+router.get('/', ensureAuthenticated, controller.findAll)
 
 export {router as eventRouter}

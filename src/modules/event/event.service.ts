@@ -30,5 +30,25 @@ export class EventService {
         });
 
         return event
+    };
+
+    async findAll() {
+        const events = await prisma.event.findMany({
+            orderBy: {
+                date: "asc"
+            },
+            include: {
+                address: true,
+                createdBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
+            }
+        });
+
+        return events;
     }
 }
