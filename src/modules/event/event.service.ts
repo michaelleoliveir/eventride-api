@@ -50,5 +50,61 @@ export class EventService {
         });
 
         return events;
+    };
+
+    async findOne(eventId: string) {
+        const event = await prisma.event.findUnique({
+            where: {
+                id: eventId
+            },
+            include: {
+                address: true,
+                createdBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+                rides: {
+                    include: {
+                        driver: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if(!event) {
+            throw new Error('Event not found')
+        };
+
+        return event
+    };
+
+    async deleteOne(eventId: string, userId: string) {
+        const event = await prisma.event.findUnique({
+            where: {
+                id: eventId
+            }
+        });
+
+        if(!event) {
+            throw new Error('Event not found')
+        };
+
+        if(event.createdById !== userId) {
+            throw new Error('Not authorized')
+        };
+
+        await prisma.event.delete({
+            where: {
+                id: eventId
+            }
+        })
     }
 }
