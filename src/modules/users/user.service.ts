@@ -3,19 +3,7 @@
 import * as bcrypt from 'bcrypt'
 import { prisma } from "../../lib/prisma"
 
-interface CreateUserDTO {
-    name: string,
-    password: string,
-    email: string
-};
-
-interface UserResponse {
-    id: string,
-    name: string,
-    email: string,
-    createdAt: Date,
-    updatedAt: Date,
-}
+import { CreateUserDTO, UserResponse } from './users.dto';
 
 export class UserService {
     private readonly SALT_ROUNDS = 10;

@@ -1,20 +1,8 @@
-import { prisma } from "../../lib/prisma"
 import * as bcrypt from "bcrypt"
 import * as jwt from "jsonwebtoken"
 
-interface LoginDTO {
-    email: string,
-    password: string
-};
-
-interface LoginResponse {
-    token: string,
-    user: {
-        id: string,
-        name: string,
-        email: string,
-    }
-};
+import { prisma } from "../../lib/prisma"
+import { LoginDTO, LoginResponse } from "./auth.dto";
 
 export class AuthService {
     async login(data: LoginDTO): Promise<LoginResponse> {
