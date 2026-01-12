@@ -1,21 +1,19 @@
 import { prisma } from "../../lib/prisma";
-import { CreateEventDTO } from "./event.dto";
+import { CreateEventDTO, UpdateEventDTO } from "./event.dto";
 
 export class EventService {
     async create(data: CreateEventDTO) {
-
-        // criando o endereço primeiro
-        const address = await prisma.address.create({
-            data: data.address
-        })
-
-        const event = await prisma.event.create({
+        return await prisma.event.create({
             data: {
                 title: data.title,
                 description: data.description,
                 date: data.date,
-                addressId: address.id,
-                createdById: data.userId
+                address: {
+                    create: data.address,
+                },
+                createdBy: {
+                    connect: { id: data.userId },
+                },
             },
             include: {
                 address: true,
@@ -23,17 +21,15 @@ export class EventService {
                     select: {
                         id: true,
                         name: true,
-                        email: true
-                    }
-                }
-            }
+                        email: true,
+                    },
+                },
+            },
         });
-
-        return event
     };
 
     async findAll() {
-        const events = await prisma.event.findMany({
+        return await prisma.event.findMany({
             orderBy: {
                 date: "asc"
             },
@@ -48,8 +44,6 @@ export class EventService {
                 }
             }
         });
-
-        return events;
     };
 
     async findOne(eventId: string) {
@@ -79,7 +73,7 @@ export class EventService {
             },
         });
 
-        if(!event) {
+        if (!event) {
             throw new Error('Event not found')
         };
 
@@ -93,11 +87,11 @@ export class EventService {
             }
         });
 
-        if(!event) {
+        if (!event) {
             throw new Error('Event not found')
         };
 
-        if(event.createdById !== userId) {
+        if (event.createdById !== userId) {
             throw new Error('Not authorized')
         };
 
@@ -106,5 +100,43 @@ export class EventService {
                 id: eventId
             }
         })
+    };
+
+    async updateOne(data: UpdateEventDTO) {
+        const event = await prisma.event.findUnique({
+            where: {
+                id: data.eventId
+            }
+        });
+
+        if (!event) {
+            throw new Error("Event not found")
+        };
+
+        if (event.createdById !== data.userId) {
+            throw new Error('Not authorized');
+        };
+
+        return await prisma.event.update({
+            where: { id: data.eventId },
+            data: {
+                title: data.title,
+                description: data.description,
+                date: data.date,
+                address: data.address ? {
+                    update: data.address,
+                } : undefined,
+            },
+            include: {
+                address: true,
+                createdBy: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
+        });
     }
 }

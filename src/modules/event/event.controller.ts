@@ -30,5 +30,16 @@ export class EventController {
         await eventService.deleteOne(id, req.userId!);
 
         return res.status(201).json({message: "Event deleted successfully"})
+    };
+
+    async updateOne(req: Request, res: Response) {
+        const {id} = req.params;
+        const updatedEvent = await eventService.updateOne({
+            eventId: id,
+            userId: req.userId,
+            ...req.body
+        });
+
+        return res.status(201).json(updatedEvent)
     }
 }
