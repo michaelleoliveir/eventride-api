@@ -7,5 +7,20 @@ export class UserController {
         const user = await userService.create(req.body);
 
         return res.status(201).json(user)
+    };
+
+    async findMe(req: Request, res: Response) {
+        const user = await userService.findMe(req.userId!);
+
+        return res.json(user)
+    };
+
+    async updateMe(req: Request, res: Response) {
+        const user = await userService.updateMe({
+            userId: req.userId,
+            ...req.body
+        });
+
+        return res.status(201).json(user)
     }
 }

@@ -3,7 +3,7 @@
 import * as bcrypt from 'bcrypt'
 import { prisma } from "../../lib/prisma"
 
-import { CreateUserDTO, UserResponse } from './users.dto';
+import { CreateUserDTO, UpdateUserDTO, UserResponse } from './users.dto';
 
 export class UserService {
     private readonly SALT_ROUNDS = 10;
@@ -12,7 +12,8 @@ export class UserService {
 
         // verifica se usuário já existe
         const exists = await prisma.user.findUnique({
-            where: { email: data.email }
+            where: { email: data.email },
+            select: { id: true }
         });
 
         // se o usuário já existe, manda mensagem de erro
@@ -39,5 +40,70 @@ export class UserService {
         });
 
         return user
+    };
+
+    async findMe(userId: string): Promise<UserResponse> {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
+
+        if(!user) {
+            throw new Error("User not found")
+        };
+
+        return user
+    };
+
+    async updateMe(data: UpdateUserDTO): Promise<UserResponse> {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: data.userId
+            }
+        });
+
+        if(!user) {
+            throw new Error("User not found")
+        };
+
+        if(data.email) {
+            const emailExists = await prisma.user.findUnique({
+                where: {
+                    email: data.email
+                },
+                select: {
+                    id: true
+                }
+            });
+
+            if(emailExists && emailExists.id !== data.userId) {
+                throw new Error("Email already in use")
+            }
+        };
+
+        return await prisma.user.update({
+            where: {
+                id: data.userId
+            },
+            data: {
+                name: data.name,
+                email: data.email
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
     }
 }

@@ -4,6 +4,12 @@ export interface CreateUserDTO {
     email: string
 };
 
+export interface UpdateUserDTO { 
+    userId: string,
+    name?: string,
+    email?: string
+}
+
 export interface UserResponse {
     id: string,
     name: string,
