@@ -14,12 +14,33 @@ export class RequestController {
     };
 
     async update(req: Request, res: Response) {
-        const {id} = req.params
-        
+        const { id } = req.params
+
         const request = await requestService.update({
             requestId: id,
             userId: req.userId,
             ...req.body
+        });
+
+        return res.status(200).json(request)
+    };
+
+    async received(req: Request, res: Response) {
+        const requests = await requestService.requestsReceived(req.userId!);
+        return res.json(requests)
+    };
+
+    async sent(req: Request, res: Response) {
+        const sent = await requestService.requestsSent(req.userId!);
+        return res.json(sent)
+    };
+
+    async cancel(req: Request, res: Response) {
+        const { id } = req.params
+
+        const request = await requestService.cancel({
+            requestId: id,
+            userId: req.userId!,
         });
 
         return res.status(200).json(request)

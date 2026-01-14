@@ -5,8 +5,13 @@ import { ensureAuthenticated } from "../../middlewares/unsureAuthenticated";
 const router = Router();
 const controller = new RequestController();
 
+router.get('/received', ensureAuthenticated, controller.received);
+router.get('/sent', ensureAuthenticated, controller.sent)
+
 router.post('/', ensureAuthenticated, controller.create);
 
-router.patch('/:id', ensureAuthenticated, controller.update)
+router.delete('/:id', ensureAuthenticated, controller.cancel)
+
+router.patch('/:id', ensureAuthenticated, controller.update);
 
 export {router as requestRouter}

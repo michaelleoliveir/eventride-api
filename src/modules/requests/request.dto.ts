@@ -8,3 +8,8 @@ export interface UpdateRequestDTO {
     userId: string,
     status: 'ACCEPTED' | 'REJECTED'
 }
+
+export interface DeleteRequestDTO {
+    requestId: string,
+    userId: string,
+}
