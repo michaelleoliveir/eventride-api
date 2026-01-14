@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import * as jwt from "jsonwebtoken"
+import { prisma } from "../lib/prisma";
 
 interface TokenPayload {
     sub: string
 }
 
-export function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
+export async function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
 
     // verifica se o token existe
@@ -18,12 +19,24 @@ export function ensureAuthenticated(req: Request, res: Response, next: NextFunct
     const token = authHeader.split(" ")[1]
 
     try {
-
         // valida o token
         const decoded = jwt.verify(
             token,
             process.env.JWT_SECRET!
         ) as TokenPayload
+
+        const user = await prisma.user.findUnique({
+            where: {
+                id: decoded.sub
+            },
+            select: {
+                isActive: true
+            }
+        });
+
+        if(!user || !user.isActive) {
+            return res.status(401).json({message: 'User not active'})
+        };
 
         // injeta o token no request
         req.userId = decoded.sub;

@@ -35,7 +35,8 @@ export class UserService {
                 name: true,
                 email: true,
                 createdAt: true,
-                updatedAt: true
+                updatedAt: true,
+                isActive: true
             }
         });
 
@@ -56,7 +57,7 @@ export class UserService {
             }
         });
 
-        if(!user) {
+        if (!user) {
             throw new Error("User not found")
         };
 
@@ -70,11 +71,11 @@ export class UserService {
             }
         });
 
-        if(!user) {
+        if (!user) {
             throw new Error("User not found")
         };
 
-        if(data.email) {
+        if (data.email) {
             const emailExists = await prisma.user.findUnique({
                 where: {
                     email: data.email
@@ -84,7 +85,7 @@ export class UserService {
                 }
             });
 
-            if(emailExists && emailExists.id !== data.userId) {
+            if (emailExists && emailExists.id !== data.userId) {
                 throw new Error("Email already in use")
             }
         };
@@ -105,5 +106,37 @@ export class UserService {
                 updatedAt: true
             }
         });
+    };
+
+    async deleteMe(userId: string) {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            select: {
+                id: true, 
+                isActive: true
+            }
+        });
+
+        if (!user) {
+            throw new Error('User not found')
+        }
+
+        if (!user.isActive) {
+            throw new Error('User already deleted')
+        };
+
+        await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                deletedAt: new Date(),
+                isActive: false
+            }
+        })
+
+        return { message: 'Account deactivated successfully' }
     }
 }

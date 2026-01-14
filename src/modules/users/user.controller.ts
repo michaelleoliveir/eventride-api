@@ -22,5 +22,12 @@ export class UserController {
         });
 
         return res.status(201).json(user)
+    };
+
+    async deleteMe(req: Request, res: Response) {
+        const userId = req.userId!;
+        const user = await userService.deleteMe(userId);
+
+        return res.status(200).json(user)
     }
 }
