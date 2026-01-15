@@ -115,7 +115,8 @@ export class UserService {
             },
             select: {
                 id: true, 
-                isActive: true
+                isActive: true,
+                ridesAsDriver: true
             }
         });
 
@@ -126,6 +127,22 @@ export class UserService {
         if (!user.isActive) {
             throw new Error('User already deleted')
         };
+
+        const hasFutureRides = await prisma.ride.findFirst({
+            where: {
+                driverId: userId,
+                date: {
+                    gte: new Date()
+                }
+            },
+            select: {
+                id: true
+            }
+        });
+
+        if(hasFutureRides) {
+            throw new Error('You cannot delete an user with upcoming rides')
+        }
 
         await prisma.user.update({
             where: {
