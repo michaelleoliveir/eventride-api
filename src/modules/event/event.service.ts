@@ -1,3 +1,4 @@
+import { NotFoundError, UnauthorizedError } from "../../errors/AppError";
 import { prisma } from "../../lib/prisma";
 import { CreateEventDTO, UpdateEventDTO } from "./event.dto";
 
@@ -74,7 +75,7 @@ export class EventService {
         });
 
         if (!event) {
-            throw new Error('Event not found')
+            throw new NotFoundError();
         };
 
         return event
@@ -88,11 +89,11 @@ export class EventService {
         });
 
         if (!event) {
-            throw new Error('Event not found')
+            throw new NotFoundError();
         };
 
         if (event.createdById !== userId) {
-            throw new Error('Not authorized')
+            throw new UnauthorizedError();
         };
 
         await prisma.event.delete({
@@ -110,11 +111,11 @@ export class EventService {
         });
 
         if (!event) {
-            throw new Error("Event not found")
+            throw new NotFoundError();
         };
 
         if (event.createdById !== data.userId) {
-            throw new Error('Not authorized');
+            throw new UnauthorizedError();
         };
 
         return await prisma.event.update({

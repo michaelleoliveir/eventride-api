@@ -1,3 +1,4 @@
+import { AppError, NotFoundError, UnauthorizedError } from "../../errors/AppError";
 import { prisma } from "../../lib/prisma";
 import { CreateRequestDTO, DeleteRequestDTO, UpdateRequestDTO } from "./request.dto";
 
@@ -10,15 +11,15 @@ export class RequestService {
         });
 
         if (!ride) {
-            throw new Error('Ride not found')
+            throw new NotFoundError();
         };
 
         if (ride.driverId === data.userId) {
-            throw new Error('Driver cannot request their own ride')
+            throw new UnauthorizedError('Driver cannot request their own ride');
         };
 
         if (ride.availableSeats <= 0) {
-            throw new Error('No available seats')
+            throw new AppError('No available seats');
         };
 
         const existingRequest = await prisma.request.findUnique({
@@ -31,7 +32,7 @@ export class RequestService {
         });
 
         if (existingRequest) {
-            throw new Error('Request already exists')
+            throw new AppError('Request already exists')
         }
 
         const request = await prisma.request.create({
@@ -82,20 +83,20 @@ export class RequestService {
         });
 
         if (!request) {
-            throw new Error('Request not found')
+            throw new NotFoundError();
         };
 
         if (request.status !== 'PENDING') {
-            throw new Error('Request already processed')
+            throw new AppError('Request already processed');
         };
 
         if (request.ride.driverId !== data.userId) {
-            throw new Error('Not authorized')
+            throw new UnauthorizedError();
         };
 
         if (data.status === 'ACCEPTED') {
             if (request.ride.availableSeats <= 0) {
-                throw new Error('No available seats')
+                throw new AppError('No available seats')
             }
 
             // tirando 1 valor de availableSeats
@@ -207,15 +208,15 @@ export class RequestService {
         });
 
         if (!request) {
-            throw new Error('Request not found');
+            throw new NotFoundError();
         }
 
         if (request.requesterId !== data.userId) {
-            throw new Error('Not authorized');
+            throw new UnauthorizedError();
         }
 
         if (request.status === 'REJECTED') {
-            throw new Error('You cannot cancel a rejected request');
+            throw new AppError('You cannot cancel a rejected request');
         }
 
         if (request.status === 'ACCEPTED') {

@@ -5,6 +5,7 @@ import { authRouter } from './modules/auth/auth.routes';
 import { eventRouter } from './modules/event/event.routes';
 import { rideRouter } from './modules/ride/ride.routes';
 import { requestRouter } from './modules/requests/request.routes';
+import { ErrorHandler } from './middlewares/errorHandler';
 
 export const app = express();
 
@@ -13,5 +14,7 @@ app.use(express.json());
 app.use('/user', userRouter);
 app.use('/events', eventRouter);
 app.use('/rides', rideRouter);
-app.use('/requests', requestRouter)
+app.use('/requests', requestRouter);
+
 app.use(authRouter);
+app.use(ErrorHandler);

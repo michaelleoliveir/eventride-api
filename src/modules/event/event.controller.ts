@@ -29,7 +29,7 @@ export class EventController {
         const {id} = req.params;
         await eventService.deleteOne(id, req.userId!);
 
-        return res.status(201).json({message: "Event deleted successfully"})
+        return res.status(200).json({message: "Event deleted successfully"})
     };
 
     async updateOne(req: Request, res: Response) {
@@ -40,6 +40,6 @@ export class EventController {
             ...req.body
         });
 
-        return res.status(201).json(updatedEvent)
+        return res.status(200).json(updatedEvent)
     }
 }

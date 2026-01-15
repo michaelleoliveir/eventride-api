@@ -3,6 +3,7 @@ import * as jwt from "jsonwebtoken"
 
 import { prisma } from "../../lib/prisma"
 import { LoginDTO, LoginResponse } from "./auth.dto";
+import { UnauthorizedError } from "../../errors/AppError";
 
 export class AuthService {
     async login(data: LoginDTO): Promise<LoginResponse> {
@@ -14,7 +15,7 @@ export class AuthService {
 
         // se o usuário não existir, manda mensagem de erro
         if (!user) {
-            throw new Error("Invalid credentials")
+            throw new UnauthorizedError('Invalid credentials')
         };
 
         // comparando a senha inserida com a guardada na DB
@@ -23,7 +24,7 @@ export class AuthService {
         );
 
         if (!passwordMatch) {
-            throw new Error("Invalid credentials")
+            throw new UnauthorizedError('Invalid credentials')
         };
 
         // criando o token de sessão

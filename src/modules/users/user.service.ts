@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt'
 import { prisma } from "../../lib/prisma"
 
 import { CreateUserDTO, UpdateUserDTO, UserResponse } from './users.dto';
+import { AppError, NotFoundError } from '../../errors/AppError';
 
 export class UserService {
     private readonly SALT_ROUNDS = 10;
@@ -18,7 +19,7 @@ export class UserService {
 
         // se o usuário já existe, manda mensagem de erro
         if (exists) {
-            throw new Error("User already exists")
+            throw new AppError("User already exists")
         };
 
         const hashedPassword = await bcrypt.hash(data.password, this.SALT_ROUNDS)
@@ -58,7 +59,7 @@ export class UserService {
         });
 
         if (!user) {
-            throw new Error("User not found")
+            throw new NotFoundError();
         };
 
         return user
@@ -72,7 +73,7 @@ export class UserService {
         });
 
         if (!user) {
-            throw new Error("User not found")
+            throw new NotFoundError();
         };
 
         if (data.email) {
@@ -86,7 +87,7 @@ export class UserService {
             });
 
             if (emailExists && emailExists.id !== data.userId) {
-                throw new Error("Email already in use")
+                throw new AppError("Email already in use")
             }
         };
 
@@ -121,11 +122,11 @@ export class UserService {
         });
 
         if (!user) {
-            throw new Error('User not found')
+            throw new NotFoundError();
         }
 
         if (!user.isActive) {
-            throw new Error('User already deleted')
+            throw new AppError('User already deleted')
         };
 
         const hasFutureRides = await prisma.ride.findFirst({
@@ -141,7 +142,7 @@ export class UserService {
         });
 
         if(hasFutureRides) {
-            throw new Error('You cannot delete an user with upcoming rides')
+            throw new AppError('You cannot delete an user with upcoming rides')
         }
 
         await prisma.user.update({

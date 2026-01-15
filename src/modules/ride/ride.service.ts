@@ -1,3 +1,4 @@
+import { AppError, NotFoundError, UnauthorizedError } from "../../errors/AppError";
 import { prisma } from "../../lib/prisma";
 import { CreateRideDTO } from "./ride.dto";
 
@@ -10,11 +11,11 @@ export class RideService {
         });
 
         if (!event) {
-            throw new Error('Event not found')
+            throw new NotFoundError();
         };
 
         if (data.totalSeats < 1) {
-            throw new Error('Total seats must be at least 1');
+            throw new AppError('Total seats must be at least 1');
         }
 
         const originAddress = await prisma.address.create({
@@ -84,11 +85,11 @@ export class RideService {
         });
 
         if(!ride) {
-            throw new Error('Ride not found')
+            throw new NotFoundError();
         };
 
         if(ride.driverId !== userId) {
-            throw new Error('Not authorized')
+            throw new UnauthorizedError();
         };
 
         await prisma.ride.delete({
