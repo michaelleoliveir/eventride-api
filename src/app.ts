@@ -1,4 +1,6 @@
 import express from 'express';
+import cors from 'cors';
+import "dotenv/config";
 
 import { userRouter } from './modules/users/user.routes';
 import { authRouter } from './modules/auth/auth.routes';
@@ -9,6 +11,12 @@ import { ErrorHandler } from './middlewares/errorHandler';
 
 export const app = express();
 
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 app.use('/user', userRouter);
